@@ -286,7 +286,7 @@ class SynccentricSubstitute
         $columns[] = 'imported_'.strtolower( preg_replace("/\r|\n/", "", $cost) );
         $columns[] = 'imported_'.strtolower( preg_replace("/\r|\n/", "", $stock) );
         
-        $this->log->info('Headers:', $columns);
+        // $this->log->info('Headers:', $columns);
         fputcsv($this->output, $columns);             
                 
         $counter = 0;
