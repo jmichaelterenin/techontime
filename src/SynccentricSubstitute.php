@@ -277,34 +277,31 @@ class SynccentricSubstitute
         // Get the header line
         $csv_line = fgets($file);
         $csv_arr =  explode(",", $csv_line);
-        list($part_no, $description, $condition, $price, $stock) = $csv_arr;
+        list($part_no, $description, $condition, $cost, $stock) = $csv_arr;
         $part_no = 'initial_identifier';
         
         array_unshift($columns , $part_no);
         $columns[] = 'imported_'.strtolower( preg_replace("/\r|\n/", "", $description) );
         $columns[] = 'imported_'.strtolower( preg_replace("/\r|\n/", "", $condition) );
-        $columns[] = 'imported_'.strtolower( preg_replace("/\r|\n/", "", $price) );
+        $columns[] = 'imported_'.strtolower( preg_replace("/\r|\n/", "", $cost) );
         $columns[] = 'imported_'.strtolower( preg_replace("/\r|\n/", "", $stock) );
         
-        // $this->log->info('Headers:', $columns);
+        $this->log->info('Headers:', $columns);
         fputcsv($this->output, $columns);             
                 
         $counter = 0;
         // Now get the rest
-        while(!feof($file))
+        while(($csv_arr = fgetcsv($file)))
         {
-            $productData = array_fill_keys($columns, '');
-            $csv_line = fgets($file);
-            $csv_arr =  explode(",", $csv_line);            
-            if (empty(array_filter($csv_arr))) break; // Apparently needed
+            $productData = array_fill_keys($columns, '');                                               
             // part # is the first
-            list($part_no, $description, $condition, $cost, $stock) = $csv_arr;
+            list($part_no, $description, $condition, $cost, $stock) = $csv_arr;                        
             
             $productData['initial_identifier'] = $part_no;
             $productData['imported_description'] = $description;
             $productData['imported_condition'] = $condition;
-            $productData['imported_cost'] = floatval(substr($cost, 4)); // 'US $' removed
-            $productData['imported_stock'] = $stock;
+            $productData['imported_price'] = floatval( str_replace( ',', '', substr($cost, 4)) ); // 'US $' removed, elminate commas
+            $productData['imported_stock'] = $stock;                        
             
             try {
             
@@ -332,8 +329,8 @@ class SynccentricSubstitute
                 $productData['buybox_used_landed_price'] = $this->apiPricing->getBuyBoxLandedPrice("2");
                 
                 $price_to_use = (($productData['buybox_new_landed_price'] != 0) ? $productData['buybox_new_landed_price'] : $productData['buybox_used_landed_price']);                
-                $productData['mfn_profit'] = ((is_numeric($productData['imported_cost']) && $price_to_use != 0) ? 
-                                                round($price_to_use - ($productData['imported_cost'] + (0.08 * $productData['buybox_new_landed_price'])), 2) 
+                $productData['mfn_profit'] = ((is_numeric($productData['imported_price']) && $price_to_use != 0) ? 
+                                                round($price_to_use - ($productData['imported_price'] + (0.08 * $productData['buybox_new_landed_price'])), 2) 
                                                     : 0);
                
                 // Next, get the category info using the ProductCategoryId
@@ -392,7 +389,7 @@ class SynccentricSubstitute
                 $productData['error_msg'] = $e->getMessage();
             }
                         
-            if ($this->debug) $this->log->debug('Output: ', $productData);
+            if ($this->debug) $this->log->info('Output: ', $productData);
             fputcsv($this->output, array_map(array($this, 'escapeForCsv'), $productData) );
             
             $counter++;            
