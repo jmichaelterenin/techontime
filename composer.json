@@ -1,0 +1,24 @@
+{
+	"name" : "michael/amazon-seller-api",
+	"type" : "project",
+	"autoload" : {
+		"psr-4" : {
+			"Michael\\AmazonSellerApi\\" : "src/"
+		}
+	},
+	"authors" : [{
+			"name" : "jmichaelterenin",
+			"email" : "jmichaelterenin@gmail.com"
+		}
+	],
+	"require" : {
+		"jlevers/selling-partner-api" : "^3.0",
+		"monolog/monolog" : "^2.3",
+		"fabpot/goutte" : "^4.0",
+		"symfony/panther" : "^1.0",
+		"vlucas/phpdotenv": "^5.3"
+	},
+	"require-dev" : {
+		"dbrekelmans/bdi" : "^0.3.0"
+	}
+}

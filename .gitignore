@@ -1,0 +1,10 @@
+/drivers
+/vendor
+/.settings
+/.env
+/public/.htaccess
+/.project
+*.txt
+*.xml
+*.csv
+*.log
