@@ -40,7 +40,7 @@ class SynccentricSubstitute
                 case 1:
                     if ($this->fileExtension($arg) == 'csv')
                         $this->inFile = $arg;
-                    else throw new Exception('Expecting a CSV file as the import, shutting down.');
+                    else throw new Exception('Expecting a CSV file as the import, shutting down!');
                 break;
             }
                     
